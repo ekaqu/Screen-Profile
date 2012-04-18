@@ -1,0 +1,24 @@
+To get things to work, first add the following to your .bashrc file:
+
+if [ "$PS1" != "" ] ; then
+  PS1="[\u@\h \w]"'\[\033k\033\\\]\$  '
+fi
+
+## show Detached screens when you launch screen
+if [ -e /usr/bin/screen ]; then
+  if [ "$TERM" = "screen" -a ! "$SHOWED_SCREEN_MESSAGE" = "true" ]; then
+    detached_screens=`/usr/bin/screen -list | grep Detached`
+    if [ ! -z "$detached_screens" ]; then
+      echo "+---------------------------------------+"
+      echo "| Detached screens are available:       |"
+      echo "$detached_screens"
+      echo "+---------------------------------------+"
+    else
+      echo "[ screen is activated ]"
+    fi
+    export SHOWED_SCREEN_MESSAGE="true"
+  fi
+fi
+
+
+After that is done make sure that .sreen* is located in your home directory.  Under the .screen directory, you can place all the profiles you care about.

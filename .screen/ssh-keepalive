@@ -1,0 +1,44 @@
+#!/bin/sh
+
+tempvar=$(which gawk 2>&1 | sed s/\ //g)
+if [[ -x $tempvar ]]; then
+  AWK="$tempvar"
+else
+  AWK="awk"
+fi
+
+tempvar=$(which ssh 2>&1 | sed s/\ //g)
+SSH_PRG="$tempvar"
+
+if [ ! -z $2 ];then
+  PREFIX="${2} "
+fi
+
+ssh() {
+  if [[ $TERM = "screen" ]]; then
+    # Print the control line to screen with hostname
+    tempvar=$(eval "echo \${$#}")
+    case $tempvar in
+      *example.com)   SHOW_HOST=$(echo $tempvar | sed -e 's/\.example\.com//') ;;
+      *com)     SHOW_HOST=$(echo $tempvar | sed -r -e 's/\.\w+\.\w+$//') ;;
+      *)      SHOW_HOST=$tempvar ;;
+    esac
+    echo -n -e "\033k${PREFIX}${SHOW_HOST}\033\\"
+  fi
+
+  # Call SSH with all parameters
+  $SSH_PRG -o StrictHostKeyChecking=no -x "$@"
+
+  if [[ $TERM = "screen" ]]; then
+    # Change back to local system's hostname
+    SHOW_HOST=$(echo $HOSTNAME | $AWK -F. '{print $1}')
+    echo -n -e "\033k${PREFIX}${SHOW_HOST}\033\\"
+  fi
+}
+
+# Will respawn your ssh session, in case it gets killed (e.g. by the firewall)
+# NOTE: If you actually want to kill the ssh session, you need to exit ssh yourself, then ^C to kill this script
+while [ 1 = 1 ]; do
+  ssh "$1"
+  sleep 5
+done

@@ -20,6 +20,9 @@ shelltitle "$ |bash"
 defscrollback 5000
 termcapinfo xterm* ti@:te@
 
+## Sets the screen shell to be the same as the current one
+shell -$SHELL
+
 
 # caption description:
 # caption always "%?%F%{-b bc}%:%{-b bb}%?%C|%D|%M %d|%H%?%F%{+u wb}%? %L=%-Lw%45>%{+b by}%n%f* %t%{-}%+Lw%-0<"
